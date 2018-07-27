@@ -1,0 +1,31 @@
+@startuml
+title 多用户多设备-时序图\n\n
+participant App1
+participant App2
+participant App3
+participant Service
+participant TcpScript
+participant Device1
+participant Device2
+
+
+App1 -> Service: http发起查询锁状态请求
+App2 -> Service: http发起查询锁状态请求
+App3 -> Service: http发起查询锁状态请求
+Service -> TcpScript: App1对脚本服务发送指令
+Service -> TcpScript: App2对脚本服务发送指令
+Service -> TcpScript: App3对脚本服务发送指令
+TcpScript ->  Device1: App1发送16进制指令查询
+TcpScript ->  Device2: App2发送16进制指令查询
+TcpScript ->  Device2: App3发送16进制指令查询
+Device1 ->  TcpScript: 返回App1的16进制指令查询
+Device2 ->  TcpScript: 返回App2的16进制指令查询
+Device2 ->  TcpScript: 返回App3的16进制指令查询
+TcpScript -> Service: 发送App1成功与失败状态值code
+TcpScript -> Service: 发送App2成功与失败状态值code
+TcpScript -> Service: 发送App3成功与失败状态值code
+Service -> App3: 返回用户端
+Service -> App2: 返回用户端
+Service -> App1: 返回用户端
+@enduml
+

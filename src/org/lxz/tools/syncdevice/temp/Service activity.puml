@@ -1,0 +1,60 @@
+@startuml
+title \n长连接异步处理物联网设备架构模板示意图\n\n
+
+package "Socket连接" {
+  interface [Socket]
+
+  node "已连接列表" {
+    interface [DeviceConnect1]
+    interface [DeviceConnect2]
+    interface [DeviceConnect...]
+  }
+  [Socket] --> [DeviceConnect1]
+  [Socket] --> [DeviceConnect2]
+
+  [DeviceConnect1] --> [服务端读写流监听]
+  [DeviceConnect2] --> [设备读写流监听]
+
+}
+
+node 服务端 {
+ 服务端 --> Socket
+}
+node "设备" {
+   设备 --> Socket
+ }
+node "设备..." {
+   设备... --> Socket
+}
+node 一次事件动作-锁{
+node "服务端读写流监听" {
+  interface [①服务端输入流]
+  note left: 发起指令
+  interface [⑧服务端输出流]
+  note left: 结束请求
+}
+
+node "设备读写流监听" {
+  interface [④设备输入流]
+  interface [⑤设备输出流]
+
+}
+
+node "异步队列处理" {
+   node  [②指令集合]
+   node  [③⑦超时队列处理]
+   interface [⑥监听设备回调]
+   [①服务端输入流]  --> [②指令集合]
+   [②指令集合]     --> [③⑦超时队列处理]
+
+   [①服务端输入流]  ~~> [⑥监听设备回调]
+
+   [③⑦超时队列处理] ->  [④设备输入流]
+   [⑤设备输出流] --> [⑥监听设备回调]
+
+   [⑥监听设备回调] -->  [③⑦超时队列处理]
+   [③⑦超时队列处理] ->  [⑧服务端输出流]
+  }
+}
+
+@enduml

@@ -1,0 +1,15 @@
+@startuml
+title 单用户单设备一级指令-时序图\n\n
+participant App
+participant Service
+participant TcpScript
+participant Device
+
+App -> Service: http发起开锁请求
+Service -> TcpScript: 对脚本服务发送锁控指令
+note left: 创建Socket连接
+note right: 查询已连接设备列表
+TcpScript ->  Device: 发送16进制指令
+TcpScript -> Service: 发送状态值code
+Service -> App: 返回用户端
+@enduml

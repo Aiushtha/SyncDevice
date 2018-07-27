@@ -1,0 +1,74 @@
+@startuml
+title \n\t实现类图\t
+
+package 服务 #DDDDDD {
+    class TcpService {
+        #deviceConnectThreaadPool:线程池
+        #version:版本
+        #port:端口
+        #synclock:异步锁
+        #eventChainTask:事件任务链
+        #connectDeviceMap:设备连接池-绑定设备id
+        #connecNonDeviceList:非设备连接池-无设备id
+        #mDeviceConnectListListen:设备连接监听
+        #mServiceEventListen:服务事件监听
+        #command:本地命令执行方法
+        #serverSocket:端口连接
+        +syncExecute():同步执行
+        +write():对指定连接写入数据
+        +startServer():开启服务
+        +run():线程-不断监听新连接
+        +addNonDeviceList():加入到非设备连接列表
+        +removeNonDeviceSocketConnectList():移除非设备连接
+        +saveSocketConnectMap():保存到设备连接池
+        +removeSocketConnectMap():移除设备连接池
+        +stopServect():停止服务
+        +closeAllConnect():断开所有连接
+        +closeNonDeviceConnect():断开非设备连接
+        +closeDeviceConnect():断开所有设备连接
+    }
+
+    class DeviceConnect {
+       #outStream: OutputStream:字节输出流
+       #inStream: InputStream:字节输入流
+       #reader: BufferedReader:字符输入流
+       #deviceId:设备id
+       #createTime:创建时间
+       #printWriter:字符打印输出流
+       #events:事件集合
+       #mReadDataListen数据读取监听器
+       +openEnabledReceiverTask():开启一个设备监听任务
+       +run():线程-不断读取连接数据
+    }
+}
+
+
+package 事件{
+ interface EventAction {
+      ~receiveProcess():读取处理
+      ~timeOut():超时时间
+      ~getFristConnectClient():获取该事件第一个连接的客户端
+      ~getAcceptConnectClient():获得被监听的设备连接的客户端
+      ~disposeEvent():处理事件
+      ~deviceAccept:设备接收数据处理
+      ~disposeEventTaskInQueue():在队列中处理事件
+      ~deviceAcceptTaskInQueue():在队列中处理设备监听
+      ~openDeviceAccept():开启指定设备监听
+      ~closeDeviceAccept():关闭设备监听
+      ~isDeviceAccept():判断设备是否被监听
+      ~isFinish():该事件是否已完成
+      ~setFinish():设置该事件已完成
+      ~waitTaskUntilFinish():等待任务知道完成
+      ~addTask(run:Runnable):追加执行任务
+ }
+ abstract  EventTask {
+  +disposeEventTaskInQueue:实现超时处理
+  +deviceAcceptTaskInQueue:实现超时处理
+ }
+}
+EventAction <|.. EventTask:模板模式
+
+TcpService --> DeviceConnect :建立连接
+
+
+@enduml

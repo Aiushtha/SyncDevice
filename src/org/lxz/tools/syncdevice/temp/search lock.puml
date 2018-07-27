@@ -1,0 +1,17 @@
+@startuml
+title 单用户单设备服务查询设备-时序图\n\n
+participant App
+participant Service
+participant TcpScript
+participant Device
+
+App -> Service: http发起查询锁状态请求
+Service -> TcpScript: 对脚本服务发送指令
+note left: 创建Socket连接
+note right: 查询已连接设备列表
+TcpScript ->  Device: 发送16进制指令查询设备状态
+Device ->  TcpScript: \t发送16进制结果
+TcpScript -> Service: 发送成功与失败状态值code
+Service -> App: 返回用户端
+@enduml
+

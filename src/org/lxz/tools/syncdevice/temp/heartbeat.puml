@@ -1,0 +1,8 @@
+@startuml
+title 心跳-时序图\n\n
+participant TcpScript
+participant Device
+Device ->  TcpScript: 每15秒发送设备id(心跳)
+note left: 加入存活列表
+TcpScript ->  Device:   \t回传设备id\t
+@enduml
